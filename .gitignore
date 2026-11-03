@@ -3,3 +3,41 @@
 *-private.*
 vendor/
 Gopkg.lock
+
+# ---------- Terraform ----------
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+
+crash.log
+crash.*.log
+*.tfplan
+tfplan
+
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+*.tfvars
+
+# Variable files that contain secrets
+*.secret.tfvars
+secrets.tfvars
+
+# ---------- Kubernetes / AWS ----------
+kubeconfig
+*.kubeconfig
+.kube/
+
+# ---------- Secrets ----------
+*.pem
+*.key
+.env.local
+
+# ---------- OS / editor ----------
+.DS_Store
+.vscode/
+.idea/
+*.swp
