@@ -21,3 +21,17 @@ module "eks" {
   environment  = "dev"
   subnet_ids   = module.vpc.private_subnet_ids
 }
+
+module "rds_mysql" {
+  source = "../../modules/rds-mysql"
+  project_name = "ecommerce-microservices"
+  environment  = "dev"
+  db_name      = "ecommerce_db"
+  engine_version = "8.0.28"
+  instance_class = "db.t3.medium"
+  allocated_storage = 20
+  vpc_id       = module.vpc.vpc_id
+  subnet_ids   = module.vpc.private_subnet_ids
+  eks_cluster_security_group_id = module.eks.cluster_security_group_id
+  db_username  = "admin"
+}
