@@ -48,3 +48,17 @@ module "documentdb" {
   instance_count = 2
 }
 
+module "valkey" {
+  source                     = "../../modules/elasticache-redis"
+  project_name               = var.project_name
+  environment                = var.environment
+  vpc_id                     = module.vpc.vpc_id
+  subnet_ids                 = module.vpc.data_subnet_ids
+  allowed_security_group_id  = module.eks.cluster_security_group_id
+
+  node_type                  = var.valkey_node_type
+  num_cache_clusters         = var.valkey_num_cache_clusters
+  transit_encryption_enabled = var.valkey_transit_encryption
+  snapshot_retention_limit   = var.valkey_snapshot_retention
+  apply_immediately          = var.valkey_apply_immediately
+}
