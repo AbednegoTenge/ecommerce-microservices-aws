@@ -14,3 +14,10 @@ module "ecr" {
   environment      = "dev"
   repository_names = ["web", "catalogue", "cart", "user", "payment", "shipping", "ratings", "dispatch"]
 }
+
+module "eks" {
+  source = "../../modules/eks"
+  project_name = "ecommerce-microservices"
+  environment  = "dev"
+  subnet_ids   = module.vpc.private_subnet_ids
+}
