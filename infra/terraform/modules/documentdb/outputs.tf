@@ -13,3 +13,7 @@ output "master_user_secret_arn" {
 output "security_group_id" {
   value = aws_security_group.this.id
 }
+
+output "cluster_id" {
+  value = aws_docdb_cluster.this.cluster_identifier
+}

@@ -43,3 +43,11 @@ variable "mq_apply_immediately" {
 variable "mq_secret_recovery_days" {
   type = number
 }
+variable "alert_email" {
+  description = "The email address to receive notifications from the SNS topic"
+  type = string
+}
+
+variable "monthly_budget_usd" {
+  type = number
+}

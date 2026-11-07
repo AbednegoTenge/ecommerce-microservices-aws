@@ -77,3 +77,15 @@ module "amazon_mq" {
   apply_immediately    = var.mq_apply_immediately
   secret_recovery_days = var.mq_secret_recovery_days
 }
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+  docdb_cluster_id = module.documentdb.cluster_id
+  mq_broker_name = module.amazon_mq.broker_name
+  rds_instance_id = module.rds_mysql.db_instance_id
+  cluster_name = module.eks.cluster_name
+  alert_email = var.alert_email
+  valkey_replication_group_id = module.valkey.replication_group_id
+  project_name = var.project_name
+  environment = var.environment
+}

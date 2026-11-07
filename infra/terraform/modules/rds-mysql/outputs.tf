@@ -32,3 +32,7 @@ output "security_group_id" {
   description = "Security group attached to the database"
   value       = aws_security_group.this.id
 }
+
+output "db_instance_id" {
+  value = aws_db_instance.this.identifier
+}
