@@ -21,3 +21,8 @@ variable "version_number" {
   type = string
   default = "1.34"
 }
+
+variable "log_retention_days" {
+  type    = number
+  default = 7
+}
