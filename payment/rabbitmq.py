@@ -1,9 +1,14 @@
 import json
 import pika
 import os
+import ssl
 
 class Publisher:
     HOST = os.getenv('AMQP_HOST', 'rabbitmq')
+    PORT = int(os.getenv('AMQP_PORT', '5672'))
+    USER = os.getenv('AMQP_USER', 'guest')
+    PASSWORD = os.getenv('AMQP_PASSWORD', 'guest')
+    USE_TLS = os.getenv('AMQP_TLS', 'false').lower() == 'true'
     VIRTUAL_HOST = '/'
     EXCHANGE='robot-shop'
     TYPE='direct'
@@ -11,10 +16,16 @@ class Publisher:
 
     def __init__(self, logger):
         self._logger = logger
+        ssl_options = None
+        if self.USE_TLS:
+            ssl_options = pika.SSLOptions(ssl.create_default_context(), self.HOST)
         self._params = pika.connection.ConnectionParameters(
             host=self.HOST,
+            port=self.PORT,
             virtual_host=self.VIRTUAL_HOST,
-            credentials=pika.credentials.PlainCredentials('guest', 'guest'))
+            credentials=pika.credentials.PlainCredentials(self.USER, self.PASSWORD),
+            ssl_options=ssl_options
+        )
         self._conn = None
         self._channel = None
 
