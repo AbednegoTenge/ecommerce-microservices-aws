@@ -62,3 +62,18 @@ module "valkey" {
   snapshot_retention_limit   = var.valkey_snapshot_retention
   apply_immediately          = var.valkey_apply_immediately
 }
+
+
+module "amazon_mq" {
+  source                    = "../../modules/amazon-mq"
+  project_name              = var.project_name
+  environment               = var.environment
+  vpc_id                    = module.vpc.vpc_id
+  subnet_ids                = module.vpc.data_subnet_ids
+  allowed_security_group_id = module.eks.cluster_security_group_id
+
+  instance_type        = var.mq_instance_type
+  deployment_mode      = var.mq_deployment_mode
+  apply_immediately    = var.mq_apply_immediately
+  secret_recovery_days = var.mq_secret_recovery_days
+}

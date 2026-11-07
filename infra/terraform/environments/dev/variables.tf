@@ -27,3 +27,19 @@ variable "valkey_snapshot_retention" {
 variable "valkey_apply_immediately" {
   type = bool
 }
+
+variable "mq_instance_type" {
+  type = string
+}
+
+variable "mq_deployment_mode" {
+  type = string
+}
+
+variable "mq_apply_immediately" {
+  type = bool
+}
+
+variable "mq_secret_recovery_days" {
+  type = number
+}
