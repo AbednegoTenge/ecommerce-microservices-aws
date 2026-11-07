@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -22,6 +24,7 @@ const (
 
 var (
 	amqpUri          string
+	amqpHostPort     string
 	rabbitChan       *amqp.Channel
 	rabbitCloseError chan *amqp.Error
 	rabbitReady      chan bool
@@ -44,7 +47,7 @@ func connectToRabbitMQ(uri string) *amqp.Connection {
 		}
 
 		log.Println(err)
-		log.Printf("Reconnecting to %s\n", uri)
+		log.Printf("Reconnecting to %s\n", amqpHostPort)
 		time.Sleep(1 * time.Second)
 	}
 }
@@ -58,7 +61,7 @@ func rabbitConnector(uri string) {
 			return
 		}
 
-		log.Printf("Connecting to %s\n", amqpUri)
+		log.Printf("Connecting to %s\n", amqpHostPort)
 		rabbitConn := connectToRabbitMQ(uri)
 		rabbitConn.NotifyClose(rabbitCloseError)
 
@@ -89,6 +92,13 @@ func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s : %s", msg, err)
 	}
+}
+
+func getEnv(key, fallback string) string {
+	if v, ok := os.LookupEnv(key); ok {
+		return v
+	}
+	return fallback
 }
 
 func getOrderId(order []byte) string {
@@ -175,12 +185,23 @@ func main() {
 	}))
 
 	// Init amqpUri
-	// get host from environment
-	amqpHost, ok := os.LookupEnv("AMQP_HOST")
-	if !ok {
-		amqpHost = "rabbitmq"
+	// connection settings from environment, defaults match in-cluster RabbitMQ
+	amqpHost := getEnv("AMQP_HOST", "rabbitmq")
+	amqpPort := getEnv("AMQP_PORT", "5672")
+	amqpUser := getEnv("AMQP_USER", "guest")
+	amqpPassword := getEnv("AMQP_PASSWORD", "guest")
+	scheme := "amqp"
+	if getEnv("AMQP_TLS", "false") == "true" {
+		scheme = "amqps"
 	}
-	amqpUri = fmt.Sprintf("amqp://guest:guest@%s:5672/", amqpHost)
+	amqpHostPort = net.JoinHostPort(amqpHost, amqpPort)
+	u := url.URL{
+		Scheme: scheme,
+		User:   url.UserPassword(amqpUser, amqpPassword),
+		Host:   amqpHostPort,
+		Path:   "/",
+	}
+	amqpUri = u.String()
 
 	// get error threshold from environment
 	errorPercent = 0
